@@ -21,5 +21,7 @@ int main(){
 		cin.get();
 		int p = PerimetroRectangulo(5, 6);
 		cout << "El perimetro es " << p << " \n";
-				
+		int p2 = PerimetroRectangulo(3, 4);
+
+		return 0;
 }
