@@ -2,203 +2,65 @@
 
 
 
-#include <string>
+
 #include <iostream>
-#include <fstream>
-#include <sstream>
+#include <GL/glew.h>
+#include <GL/freeglut.h>
 
-using namespace std;
-// Ejercicio 1 
-int PerimetroRectangulo(int base, int altura) {
+
+void MainLoop() {
+	//Borramos el buffer de color y profundidad siempre al inico de un nuevo frame 
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
+	//TODO: renderear 
+
+
+	// WARNING: Esto es OpenGl clasico y no lo vamos a volver a usar en tood el semestre 
+	//Intercambiar os buffers (el que se estaba rendereando con el que se estaba mostrando 
+	glBegin(GL_TRIANGLES); 
+	//3f porque es RGB
+	glColor3f(1.0f, 0.0f, 0.0f);
+	glVertex2f(-1.0f, -1.0f);
+	glColor3f(0.0f, 0.1f, 0.0f); 
+	glVertex2f(1.0f, -1.0f); 
+	glColor3f(0.0f, 0.0f, 0.1f); 
+	glVertex2f(0.0f, 1.0f); 
+
+	glEnd(); 
+	//END WARNING 
+
+
+	glutSwapBuffers(); 
+
+}
+
+int main(int argc, char*argv[])
+{
+	//Inicializamos freeglut 
+	//freeglut genera ventanas 
+	glutInit(&argc, argv); 
+	//Estamos informando que usaremos el pipeline clasico (OpenGl viejito)
+	glutInitContextProfile(GLUT_COMPATIBILITY_PROFILE);
+	// nos permite configurar eventos que pasan en la ventana, como cuando alguien la abre o la cierra
+
+	glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_GLUTMAINLOOP_RETURNS); 
 	
-	int p = 2*(base + altura);
-	return p;
-}
-// Ejercicio 2
-float AreaTriangulo(float base, float altura) {
-	int at = (base*altura) / 2;
-	return at; 
+	// Configuramos un frambuffer de color, uno de profundidad y uno extras para hacer render 
 
+	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE); 
+	//Solicitamos una ventana de 400px
+	glutInitWindowSize(400, 400); 
+	//Creamos una ventana con titulo personalizado
+	glutCreateWindow("Hello World OpenGL"); 
+	//Asociar una funcion de render. Esta funcion mandara llamar para dibujar un frame 
+	glutDisplayFunc(MainLoop); 
 
+	//Inicializamos GLEW. Esta libreria se encarga de obtener el API de OpenGL nuestra tarjeta de video 
+	glewInit(); 
+	//Configurar OpenGl, color por default del buffer de color 
+	glClearColor(1.0f, 1.0f, 0.5f, 0.1f); 
+	//Iniciamos la aplicacion grafica. El main se pausara en esta linea hasta que se cierre la ventana de OpenGL
+	glutMainLoop(); 
 
-}
-// Ejercicio 3 
-int Mayor(int numero1, int numero2, int numero3) {
-	int mayor;
-	if (numero1 > numero2, numero1 > numero3)  mayor = numero1; 
-	else if (numero2 > numero1, numero2 > numero3) mayor = numero2; 
-	else if (numero3 > numero2, numero3 > numero1) mayor = numero3;
-	return  mayor; 
-}
-// Ejercicio 4  
-int Menor(int numero1, int numero2, int numero3) {
-	int menor;
-	if (numero1 < numero2, numero1 < numero3)  menor = numero1;
-	else if (numero2 < numero1, numero2 < numero3) menor = numero2;
-	else if (numero3 < numero2, numero3 < numero1) menor = numero3;
-	return  menor;
-}
-// Ejercicio 5
-void FilaEstrellas(int n) { 
-	int counter = 0;
-	while (counter != n) {
-		if (counter == n - 1)
-		{
-			std::cout << "*" << std::endl;
-		}
-		else {
-			std::cout << "*";
-		}
-		counter++;
-	}
-
-}
-
-//Ejercicio 6
-void MatrizEstrellas(int n)
-{
-	int counter = 0;
-	while (counter != n) {
-		int columnas = 0;
-		while ( columnas != n) {
-			if (columnas == n - 1)
-			{
-				std::cout << "*" << std::endl;
-			}
-			else {
-				std::cout << "*";
-			}
-			columnas++;
-		}
-		counter++;
-	}
-}
-
-//Ejercicio 7
-void PiramideEstrellas(int n)
-{
-
-	for (int i = 1; i <= n; ++i) {
-		for (int j = 1; j <= i; ++j) {
-			std::cout << "*";
-		}
-		std::cout << "\n";
-	}
-
-}
-
-//Ejercicio 8
-void FlechaEstrellas(int n)
-{
-	
-	for (int i = 1; i <= n; ++i) {
-		for (int j = 1; j <= i; ++j) {
-			std::cout << "*";
-		}
-		std::cout << "\n";
-	}
-	for (int i = n - 1; i >= 1; --i) {
-		for (int j = 1; j <= i; ++j) {
-			std::cout << "*";
-		}
-		std::cout << "\n";
-	}
-}
-
-//Ejercicio 9
-void Fibonacci(int n)
-{
-	int counter = 1;
-	int fib = 1;
-	int a = 1;
-	int b = 1;
-	std::cout << "0 ";
-	std::cout << a << " ";
-	while (counter != n) {
-		std::cout << fib << " ";
-		fib = a + b;
-		a = b;
-		b = fib;
-		counter++;
-
-		if (counter == n) {
-			std::cout << "\n";
-		}
-	}
-
-}
-
-//Ejercicio 10
-bool EsPrimo(int numero)
-{
-
-	int a = 0;
-	for (int i = 1; i < (numero + 1); i++) {
-		if (numero %i == 0) {
-			a++;
-		}
-	}
-	if (a != 2) {
-		std::cout << "No es primo " << "\n";
-	}
-	else {
-		std::cout << "Si es primo " << "\n";
-	}
 	return 0;
 }
-
-
-
-int main(){
-
-	// Ejercicio 1 
-		cout << "Obtengamos el perimetro de un rectangulo\n";
-		cin.get();
-		int p = PerimetroRectangulo(5, 3);
-		cout << "El perimetro es " << p << " \n";
-		cin.get();
-	// Ejercicio 2
-		cout << "Obtengamos el area de un triangulo\n";
-		cin.get();
-		int at = AreaTriangulo(5, 8);
-		cout << "El area es " << at << " \n";
-		cin.get();
-	// Ejercicio 3
-		cout << "Obtengamos el numero mayor\n";
-		cin.get();
-		int mayor = Mayor (3, 6,5);
-		cout << "El mayor es " << mayor << " \n";
-		cin.get();
-	// Ejercicio 4
-		cout << "Obtengamos el numero menor\n";
-		cin.get();
-		int menor = Menor(3, 6, 5);
-		cout << "El mayor es " << menor << " \n";
-		cin.get();
-	// Ejercicio 5 
-		cout << "Imprimamos estrellas\n";
-		cin.get(); 
-		FilaEstrellas(9); 
-	//Ejercicio 6
-		cout << "Imprimamos una matriz de estrellas\n";
-		cin.get();
-		MatrizEstrellas(7);
-	//Ejercicio 7 
-		cout << "Imprimamos una piramide de estrellas\n";
-		cin.get();
-		PiramideEstrellas(8);
-	//Ejercicio 8
-		cout << "Imprimamos una flecha de estrellas\n";
-		cin.get();
-		FlechaEstrellas(10);
-	//Ejercicio 9 
-		cout << "Imprimamos la serie de Fibonacci \n";
-		cin.get();
-		Fibonacci(1);
-	//Ejercicio 10 
-		cout << "Veamos si tu numero es primo\n";
-		cin.get();
-		EsPrimo(63);
-		cin.get();
-		return 0;
-}
+ 
