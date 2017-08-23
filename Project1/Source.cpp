@@ -36,13 +36,115 @@ int Menor(int numero1, int numero2, int numero3) {
 	else if (numero3 < numero2, numero3 < numero1) menor = numero3;
 	return  menor;
 }
-/* Ejercicio 5
+// Ejercicio 5
 void FilaEstrellas(int n) { 
-	cin >>  n; 
-	while (n=>0) cout
-} 
+	int counter = 0;
+	while (counter != n) {
+		if (counter == n - 1)
+		{
+			std::cout << "*" << std::endl;
+		}
+		else {
+			std::cout << "*";
+		}
+		counter++;
+	}
 
-Preguntar como almacenar los caracteres en arrays*/
+}
+
+//Ejercicio 6
+void MatrizEstrellas(int n)
+{
+	int counter = 0;
+	while (counter != n) {
+		int columnas = 0;
+		while ( columnas != n) {
+			if (columnas == n - 1)
+			{
+				std::cout << "*" << std::endl;
+			}
+			else {
+				std::cout << "*";
+			}
+			columnas++;
+		}
+		counter++;
+	}
+}
+
+//Ejercicio 7
+void PiramideEstrellas(int n)
+{
+
+	for (int i = 1; i <= n; ++i) {
+		for (int j = 1; j <= i; ++j) {
+			std::cout << "*";
+		}
+		std::cout << "\n";
+	}
+
+}
+
+//Ejercicio 8
+void FlechaEstrellas(int n)
+{
+	
+	for (int i = 1; i <= n; ++i) {
+		for (int j = 1; j <= i; ++j) {
+			std::cout << "*";
+		}
+		std::cout << "\n";
+	}
+	for (int i = n - 1; i >= 1; --i) {
+		for (int j = 1; j <= i; ++j) {
+			std::cout << "*";
+		}
+		std::cout << "\n";
+	}
+}
+
+//Ejercicio 9
+void Fibonacci(int n)
+{
+	int counter = 1;
+	int fib = 1;
+	int a = 1;
+	int b = 1;
+	std::cout << "0 ";
+	std::cout << a << " ";
+	while (counter != n) {
+		std::cout << fib << " ";
+		fib = a + b;
+		a = b;
+		b = fib;
+		counter++;
+
+		if (counter == n) {
+			std::cout << "\n";
+		}
+	}
+
+}
+
+//Ejercicio 10
+bool EsPrimo(int numero)
+{
+
+	int a = 0;
+	for (int i = 1; i < (numero + 1); i++) {
+		if (numero %i == 0) {
+			a++;
+		}
+	}
+	if (a != 2) {
+		std::cout << "No es primo " << "\n";
+	}
+	else {
+		std::cout << "Si es primo " << "\n";
+	}
+	return 0;
+}
+
 
 
 int main(){
@@ -71,6 +173,30 @@ int main(){
 		int menor = Menor(3, 6, 5);
 		cout << "El mayor es " << menor << " \n";
 		cin.get();
-
+	// Ejercicio 5 
+		cout << "Imprimamos estrellas\n";
+		cin.get(); 
+		FilaEstrellas(9); 
+	//Ejercicio 6
+		cout << "Imprimamos una matriz de estrellas\n";
+		cin.get();
+		MatrizEstrellas(7);
+	//Ejercicio 7 
+		cout << "Imprimamos una piramide de estrellas\n";
+		cin.get();
+		PiramideEstrellas(8);
+	//Ejercicio 8
+		cout << "Imprimamos una flecha de estrellas\n";
+		cin.get();
+		FlechaEstrellas(10);
+	//Ejercicio 9 
+		cout << "Imprimamos la serie de Fibonacci \n";
+		cin.get();
+		Fibonacci(1);
+	//Ejercicio 10 
+		cout << "Veamos si tu numero es primo\n";
+		cin.get();
+		EsPrimo(63);
+		cin.get();
 		return 0;
 }
