@@ -19,6 +19,8 @@ float AreaTriangulo(float base, float altura) {
 	int at = (base*altura) / 2;
 	return at; 
 
+
+
 }
 // Ejercicio 3 
 int Mayor(int numero1, int numero2, int numero3) {
