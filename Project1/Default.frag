@@ -1,10 +1,10 @@
-#version 330 
+#version 330
 
-in vec3 InterpolatedColor; 
+in vec3 InterpolatedColor;
 
-out vec4 FragColor; 
+out vec4 FragColor;
 
-void main() 
+void main()
 {
-	FragColor = vec4(InterpolatedColor, 1.0f); 
+	FragColor = vec4(InterpolatedColor, 1.0f);
 }

@@ -1,19 +1,21 @@
 // Melanie Vértiz Jiménez A01169675 
 
 
-#include <iostream>
 #include <GL/glew.h>
 #include <GL/freeglut.h>
+#include <iostream>
 #include <glm/glm.hpp>
 #include <vector>
-#include "InputFile.h"
+#include "Camera.h"
+#include "Mesh.h"
+#include "ShaderProgram.h"
+#include "Transform.h"
 
-// Identificador del manager de VBOs para un conjunto de vertices.
-GLuint vao;
-//Identificaor del manager de shaders (ShaderProgram) 
-GLuint shaderProgram; 
-
-
+Camera _camera;
+Mesh _mesh;
+Transform _transform;
+Transform _transform2; 
+ShaderProgram _shaderProgram;
 
 // Función que va a inicializar toda la memoria del programa.
 void Initialize()
@@ -21,142 +23,124 @@ void Initialize()
 	// Vamos a crear una lista que va a almacenar las posiciones
 	// en 2 dimensiones de un triángulo.
 	// Esto es en CPU y RAM.
-	std::vector<glm::vec2> positions;
-	positions.push_back(glm::vec2(-1.0f, -1.0f));
-	positions.push_back(glm::vec2(1.0f, -1.0f));
-	positions.push_back(glm::vec2(0.0f, 1.0f));
+	std::vector<glm::vec3> positions;
+	// Cara frontal
+	positions.push_back(glm::vec3(-3.0f, -3.0f, 3.0f)); //C		0
+	positions.push_back(glm::vec3(3.0f, -3.0f, 3.0f)); //D		1
+	positions.push_back(glm::vec3(3.0f, 3.0f, 3.0f)); //B		2
+	positions.push_back(glm::vec3(-3.0f, 3.0f, 3.0f)); //A		3
+	// Cara lateral derecha
+	positions.push_back(glm::vec3(3.0f, -3.0f, 3.0f)); //D		4
+	positions.push_back(glm::vec3(3.0f, -3.0f, -3.0f)); //H		5
+	positions.push_back(glm::vec3(3.0f, 3.0f, -3.0f)); //F		6
+	positions.push_back(glm::vec3(3.0f, 3.0f, 3.0f)); //B		7
+	// Cara trasera 
+	positions.push_back(glm::vec3(-3.0f, -3.0f, -3.0f)); //G	8
+	positions.push_back(glm::vec3(-3.0f, 3.0f, -3.0f)); //E		9
+	positions.push_back(glm::vec3(3.0f, 3.0f, -3.0f)); //F		10
+	positions.push_back(glm::vec3(3.0f, -3.0f, -3.0f)); //H		11
+	//Cara Lateral izquierda 
+	positions.push_back(glm::vec3(-3.0f, 3.0f, 3.0f)); //A		12	
+	positions.push_back(glm::vec3(-3.0f, 3.0f, -3.0f)); //E		13
+	positions.push_back(glm::vec3(-3.0f, -3.0f, 3.0f)); //C		14	
+	positions.push_back(glm::vec3(-3.0f, -3.0f, -3.0f)); //G	15
+	// Tapa inferior 
+	positions.push_back(glm::vec3(-3.0f, -3.0f, 3.0f)); //C		16
+	positions.push_back(glm::vec3(-3.0f, -3.0f, -3.0f)); //G	17
+	positions.push_back(glm::vec3(3.0f, -3.0f, -3.0f)); //H		18
+	positions.push_back(glm::vec3(3.0f, -3.0f, 3.0f)); //D		19
+	// Tapa superior 
+	positions.push_back(glm::vec3(-3.0f, 3.0f, 3.0f)); //A		20
+	positions.push_back(glm::vec3(3.0f, 3.0f, 3.0f)); //B		21
+	positions.push_back(glm::vec3(-3.0f, 3.0f, -3.0f)); //E		22
+	positions.push_back(glm::vec3(3.0f, 3.0f, -3.0f)); //F		23
 
 	// Vamos a crear una lista para almacenar colores RGB
 	// Esta lista está en CPU y RAM
 	std::vector<glm::vec3> colors;
-	// RGB -> Rojo
+	// Cara frontal
 	colors.push_back(glm::vec3(1.0f, 0.0f, 0.0f));
-	// RGB -> Verde
+	colors.push_back(glm::vec3(1.0f, 0.0f, 0.0f));
+	colors.push_back(glm::vec3(1.0f, 0.0f, 0.0f));
+	colors.push_back(glm::vec3(1.0f, 0.0f, 0.0f));
+	// Cara lateral derecha
 	colors.push_back(glm::vec3(0.0f, 1.0f, 0.0f));
-	// RGB -> Azul
+	colors.push_back(glm::vec3(0.0f, 1.0f, 0.0f));
+	colors.push_back(glm::vec3(0.0f, 1.0f, 0.0f));
+	colors.push_back(glm::vec3(0.0f, 1.0f, 0.0f));
+	// Cara trasera 
 	colors.push_back(glm::vec3(0.0f, 0.0f, 1.0f));
+	colors.push_back(glm::vec3(0.0f, 0.0f, 1.0f));
+	colors.push_back(glm::vec3(0.0f, 0.0f, 1.0f));
+	colors.push_back(glm::vec3(0.0f, 0.0f, 1.0f));
+	//Cara lateral izquierda 
+	colors.push_back(glm::vec3(1.0f, 0.0f, 1.0f));
+	colors.push_back(glm::vec3(1.0f, 0.0f, 1.0f));
+	colors.push_back(glm::vec3(1.0f, 0.0f, 1.0f));
+	colors.push_back(glm::vec3(1.0f, 0.0f, 1.0f));
+	//Tapa inferior 
+	colors.push_back(glm::vec3(1.0f, 1.0f, 0.0f));
+	colors.push_back(glm::vec3(1.0f, 1.0f, 0.0f));
+	colors.push_back(glm::vec3(1.0f, 1.0f, 0.0f));
+	colors.push_back(glm::vec3(1.0f, 1.0f, 0.0f));
+	// Tapa superior 
+	colors.push_back(glm::vec3(0.50f, 0.1f, 0.3f));
+	colors.push_back(glm::vec3(0.50f, 0.1f, 0.3f));
+	colors.push_back(glm::vec3(0.50f, 0.1f, 0.3f));
+	colors.push_back(glm::vec3(0.50f, 0.1f, 0.3f));
 
-	// Creamos un VAO y almacenamos el id en la variable vao.
-	// Este es el manager de VBOs
-	glGenVertexArrays(1, &vao);
-	// Le decimos a OpenGL que queremos utilizar el manager.
-	// Todos los VBOs que creemos a partir de este punto y hasta
-	// que desactivemos este VAO, se van a asociar a este manager.
-	glBindVertexArray(vao);
+	std::vector<unsigned int> indices = { 0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7, 8, 9, 10, 11, 8, 10, 12, 13, 15, 12, 15, 14, 16, 17, 18, 16, 18, 19, 22, 20, 23, 20, 21, 23};
 
-	// Identificador del VBO de posiciones. Aqui lo vamos a almacenar.
-	GLuint positionsVBO;
-	// Creamos un VBO y almacenamos el id en la variable positionsVBO
-	glGenBuffers(1, &positionsVBO);
-	// Le decimos a OpenGL que lo queremos utilizar como un atributo.
-	glBindBuffer(GL_ARRAY_BUFFER, positionsVBO);
-	// Asignamos los datos al buffer y los mandamos a la tarjeta de video.
-	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * positions.size(),
-		positions.data(), GL_STATIC_DRAW);
-	// Quiero activar el atributo con indice 0 en la tarjeta de video
-	glEnableVertexAttribArray(0);
-	// Configuramos el atributo con indice 0 en la tarjeta de video.
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
-	// Desactivamos el uso del VBO de posiciones
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	_mesh.CreateMesh(24);
+	_mesh.SetPositionAttribute(positions, GL_STATIC_DRAW, 0);
+	_mesh.SetColorAttribute(colors, GL_STATIC_DRAW, 1);
+	_mesh.SetIndices(indices, GL_STATIC_DRAW);
 
-	GLuint colorsVBO;
-	glGenBuffers(1, &colorsVBO);
-	glBindBuffer(GL_ARRAY_BUFFER, colorsVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * colors.size(),
-		colors.data(), GL_STATIC_DRAW);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	_shaderProgram.CreateProgram();
+	_shaderProgram.AttachShader("Default.vert", GL_VERTEX_SHADER);
+	_shaderProgram.AttachShader("Default.frag", GL_FRAGMENT_SHADER);
+	_shaderProgram.SetAttribute(0, "VertexPosition");
+	_shaderProgram.SetAttribute(1, "VertexColor");
+	_shaderProgram.LinkProgram();
 
-
-
-	// Ya no quiero utilizar el VAO. Ya no se asociarán más VBOs a este VAO
-	glBindVertexArray(0);
-
-
-	//VERTEX SHADER 
-	InputFile ifile; 
-	//Leemos el codigo fuente del vertex shader con la clase auxiliar InputFile 
-
-	ifile.Read("Default.vert"); 
-	//Obtenemos contenigos leidos y almacenamos en vertexSource 
-	std::string vertexSource = ifile.GetContents(); 
-	//HAcemos un cast (conversion de tipo de dato) porque no le podemos mandar strings a OpenGl. Necesitamos mandar un GLChar* 
-	//GLchar* es un string de C 
-	const GLchar *vertexSource_c = (const GLchar*)vertexSource.c_str(); 
-	//Creamos un shader de tipo de vertex shader y guardamos su id en la variable vertexShaderHandle 
-	GLuint vertexShaderHandle = glCreateShader(GL_VERTEX_SHADER); 
-	//Le mandamos el codigo fuente que leimos previamente a OpenGL 
-	glShaderSource(vertexShaderHandle, 1, &vertexSource_c, nullptr);
-	//Le pedimos que compile 
-	glCompileShader(vertexShaderHandle); 
-
-	GLint vertexShaderCompileSuccess = 0; 
-	glGetShaderiv(vertexShaderHandle, GL_COMPILE_STATUS, &vertexShaderCompileSuccess);
-	if (vertexShaderCompileSuccess == GL_FALSE) 
-	{
-		GLint logLength = 0; 
-		glGetShaderiv(vertexShaderHandle, GL_INFO_LOG_LENGTH, &logLength); 
-		if (logLength > 0)
-		{
-			std::vector<GLchar>compileLog(logLength); 
-			glGetShaderInfoLog(vertexShaderHandle, logLength, &logLength, &compileLog[0]); 
-			for (int i = 0; i < logLength; i++) {
-				std::cout << compileLog[i]; 
-				}
-			std::cout << std::endl; 
-		}
-		std::cout << "Shader Default.vert did not compile" << std::endl; 
-	}
-
-
-	//FRAGMENT SHADER 
-	//Leemos el codigo fuente del vertex shader con la clase auxiliar InputFile 
-
-	ifile.Read("Default.frag");
-	//Obtenemos contenigos leidos y almacenamos en vertexSource 
-	std::string fragmentSource = ifile.GetContents();
-	const GLchar* fragmentSource_c = (const GLchar*) fragmentSource.c_str();
-	GLuint fragmentShaderHandle = glCreateShader(GL_FRAGMENT_SHADER); 
-	glShaderSource(fragmentShaderHandle, 1, &fragmentSource_c, nullptr);
-	//Le pedimos que compile 
-	glCompileShader(fragmentShaderHandle);
-
-	//Creando el manager de los shaders. Almacenamos el id en la variable shaderProgram. 
-
-	shaderProgram = glCreateProgram(); 
-	//Este manager va administrar el vertex shader con el identificador veretexShaderhandle
-	glAttachShader(shaderProgram, vertexShaderHandle); 
-	//Este manager va administrar el vertex shader con el identificador fragmentShaderhandle
-	glAttachShader(shaderProgram, fragmentShaderHandle); 
-	//Asociamos el buffer con el nombre de variable en el shader 
-	glBindAttribLocation(shaderProgram, 0, "VertexPosition"); 
-	//Asociamos el indice del buffer 
-	glBindAttribLocation(shaderProgram, 1, "VertexColor"); 
-	//verificamos que las etapas puedan trabajar en conjunto 
-	glLinkProgram(shaderProgram); 
+	_transform.SetPosition(-10.0f, 0.0f, -20.0f);
+	_transform2.SetPosition(10.0f, 0.0f, -20.0f);
 
 }
-
 void MainLoop()
 {
 	// Borramos el buffer de color y profundidad siempre al inicio de un nuevo frame.
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// Paso 1 no lo podemos hacer aún.
-	glUseProgram(shaderProgram); 
-	// Paso 2: Activar un VAO
-	glBindVertexArray(vao);
-	// Paso 3: Dibujamos
-	glDrawArrays(GL_TRIANGLES, 0, 3);
-	// Paso 4: Desactivamos el VAO
-	glBindVertexArray(0);
-	// Paso 5 aún no lo podemos hacer.
+	_transform.Rotate(0.01f, 0.01f, 0.001f, true);
+	_shaderProgram.Activate();
+	_transform2.Rotate(0.03f, 0.02f, 0.004f, true);
+	_shaderProgram.Activate();
+	_shaderProgram.SetUniformMatrix("mvpMatrix", _camera.GetViewProjection() * _transform.GetModelMatrix());
+	_mesh.Draw(GL_TRIANGLES);
+	_shaderProgram.SetUniformMatrix("mvpMatrix", _camera.GetViewProjection() * _transform2.GetModelMatrix());
+	_mesh.Draw(GL_TRIANGLES);
+	_shaderProgram.Deactivate();
+	_shaderProgram.Deactivate();
 
 	// Intercambiar los buffers (el que se estaba rendereando con el que se estaba
 	// mostrando).
 	glutSwapBuffers();
+}
+
+void Idle()
+{
+	// Cuando OpenGL entra en modo de reposo 
+	// (para guardar bateria, por ejemplo)
+	// le decimos que vuelva a dibujar ->
+	// Vuelve a mandar a llamar GameLoop
+	glutPostRedisplay();
+}
+
+void ReshapeWindow(int width, int height)
+{
+	glViewport(0, 0, width, height);
+	//camera.setpersective y mandar llamar el 
 }
 
 int main(int argc, char* argv[])
@@ -177,12 +161,20 @@ int main(int argc, char* argv[])
 	// para rendererar (evitamos parpadeos al renderear).
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
 	// Solicitamos una ventana de 400x400 pixeles.
-	glutInitWindowSize(400, 400);
+	glutInitWindowSize(1200, 800);
 	// Creamos y abrimos la ventana con un título personalizado.
 	glutCreateWindow("Hello World OpenGL");
 	// Asociar una función de render. Esta función se mandará a llamar para 
 	// dibujar un frame.
 	glutDisplayFunc(MainLoop);
+	// Asociamos una función para el cambio de resolución
+	// de la ventana. Freeglut la va a mandar a llamar
+	// cuando alguien cambie el tamaño de la venta.
+	glutReshapeFunc(ReshapeWindow);
+	
+	// Asociamos la función que se mandará a llamar
+	// cuando OpenGL entre en modo de reposo.
+	glutIdleFunc(Idle);
 
 	// Inicializamos GLEW. Esta librería se encarga de obtener el API
 	// de OpenGL de nuestra tarjeta de video. SHAME ON YOU MICROSOFT.
@@ -191,6 +183,16 @@ int main(int argc, char* argv[])
 	// COnfigurar OpenGL. Este es el color por default del buffer de color
 	// en el framebuffer.
 	glClearColor(1.0f, 1.0f, 0.5f, 1.0f);
+	// Ademas de solicitar el buffer de profundidad, tenemos
+	// que decirle a OpenGL que lo queremos activo
+	glEnable(GL_DEPTH_TEST);
+	// Activamos el borrado de caras traseras.
+	// Ahora todos los triangulos que dibujemos deben estar en CCW
+	glEnable(GL_CULL_FACE);
+	// No dibujar las caras traseras de las geometrías.
+	glCullFace(GL_BACK);
+
+	std::cout << glGetString(GL_VERSION) << std::endl;
 
 	// Configurar la memoria que la aplicación va a necesitar.
 	Initialize();
