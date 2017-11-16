@@ -62,6 +62,9 @@
     <ClInclude Include="Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Default.vert">
@@ -70,5 +73,12 @@
     <None Include="Default.frag">
       <Filter>Source Files\Shaders</Filter>
     </None>
+    <None Include="PhongShader.vert" />
+    <None Include="PhongShader.frag" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Project1.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

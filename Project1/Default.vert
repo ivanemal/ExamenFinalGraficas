@@ -11,4 +11,5 @@ void main()
 {
 	InterpolatedColor = VertexColor;
 	gl_Position = mvpMatrix * vec4(VertexPosition, 1.0f);
+	
 }

@@ -16,7 +16,12 @@ Mesh _mesh;
 Transform _transform;
 Transform _transform2; 
 ShaderProgram _shaderProgram;
-
+glm::vec3 _LightPosition; 
+glm::vec3 _LightColor; 
+glm::vec3 _AmbientLight; 
+glm::mat3 _NormalMatrix; 
+glm::mat3 _NormalMatrix2; 
+glm::vec3 _CameraPosition = _camera.GetPosition(); 
 // Función que va a inicializar toda la memoria del programa.
 void Initialize()
 {
@@ -89,22 +94,88 @@ void Initialize()
 	colors.push_back(glm::vec3(0.50f, 0.1f, 0.3f));
 	colors.push_back(glm::vec3(0.50f, 0.1f, 0.3f));
 
-	std::vector<unsigned int> indices = { 0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7, 8, 9, 10, 11, 8, 10, 12, 13, 15, 12, 15, 14, 16, 17, 18, 16, 18, 19, 22, 20, 23, 20, 21, 23};
+	std::vector<glm::vec3> normals;
+
+	//frontal 
+	normals.push_back(glm::vec3(0.0f, 0.0f, 1.0f)); 
+	normals.push_back(glm::vec3(0.0f, 0.0f, 1.0f));
+	normals.push_back(glm::vec3(0.0f, 0.0f, 1.0f));
+	normals.push_back(glm::vec3(0.0f, 0.0f, 1.0f));
+
+	//derecha 
+	normals.push_back(glm::vec3(1.0f, 0.0f, 0.0f));
+	normals.push_back(glm::vec3(1.0f, 0.0f, 0.0f));
+	normals.push_back(glm::vec3(1.0f, 0.0f, 0.0f));
+	normals.push_back(glm::vec3(1.0f, 0.0f, 0.0f));
+
+	//trasera 
+	normals.push_back(glm::vec3(0.0f, 0.0f, -1.0f));
+	normals.push_back(glm::vec3(0.0f, 0.0f, -1.0f));
+	normals.push_back(glm::vec3(0.0f, 0.0f, -1.0f));
+	normals.push_back(glm::vec3(0.0f, 0.0f, -1.0f));
+
+	//izquierda 
+	normals.push_back(glm::vec3(-1.0f, 0.0f, 0.0f));
+	normals.push_back(glm::vec3(-1.0f, 0.0f, 0.0f));
+	normals.push_back(glm::vec3(-1.0f, 0.0f, 0.0f));
+	normals.push_back(glm::vec3(-1.0f, 0.0f, 0.0f));
+
+	//inferior 
+	normals.push_back(glm::vec3(0.0f, -1.0f, 0.0f));
+	normals.push_back(glm::vec3(0.0f, -1.0f, 0.0f));
+	normals.push_back(glm::vec3(0.0f, -1.0f, 0.0f));
+	normals.push_back(glm::vec3(0.0f, -1.0f, 0.0f));
+
+	//superior 
+	normals.push_back(glm::vec3(0.0f, 1.0f, 0.0f));
+	normals.push_back(glm::vec3(0.0f, 1.0f, 0.0f));
+	normals.push_back(glm::vec3(0.0f, 1.0f, 0.0f));
+	normals.push_back(glm::vec3(0.0f, 1.0f, 0.0f));
+
+	std::vector<unsigned int> indices = { 0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7, 8, 9, 10, 11, 8, 10, 12, 13, 15, 12, 15, 14, 16, 17, 18, 16, 18, 19, 22, 20, 23, 20, 21, 23 };
 
 	_mesh.CreateMesh(24);
 	_mesh.SetPositionAttribute(positions, GL_STATIC_DRAW, 0);
 	_mesh.SetColorAttribute(colors, GL_STATIC_DRAW, 1);
+	_mesh.SetNormalAttribute(normals, GL_STATIC_DRAW, 2); 
 	_mesh.SetIndices(indices, GL_STATIC_DRAW);
 
 	_shaderProgram.CreateProgram();
-	_shaderProgram.AttachShader("Default.vert", GL_VERTEX_SHADER);
-	_shaderProgram.AttachShader("Default.frag", GL_FRAGMENT_SHADER);
+	_shaderProgram.AttachShader("PhongShader.vert", GL_VERTEX_SHADER);
+	_shaderProgram.AttachShader("PhongShader.frag", GL_FRAGMENT_SHADER);
 	_shaderProgram.SetAttribute(0, "VertexPosition");
 	_shaderProgram.SetAttribute(1, "VertexColor");
-	_shaderProgram.LinkProgram();
+	_shaderProgram.SetAttribute(2, "VertexNormals"); 
 
-	_transform.SetPosition(-10.0f, 0.0f, -20.0f);
-	_transform2.SetPosition(10.0f, 0.0f, -20.0f);
+	//Declaramos la luz 
+	_LightPosition.x = -5.0f;
+	_LightPosition.y = 5.0f;
+	_LightPosition.z = 5.0f;
+
+
+	//Definimos color
+	_LightColor.x = 1.0f;
+	_LightColor.y = 1.0f;
+	_LightColor.z = 1.0f;
+
+	_shaderProgram.LinkProgram();
+	_shaderProgram.Activate();
+	_shaderProgram.SetUniformf("_LightColor", _LightColor);
+	_shaderProgram.SetUniformf("_LightPosition", _LightPosition);
+	_shaderProgram.SetUniformf("_CameraPosition", _CameraPosition);
+	
+	_shaderProgram.Deactivate();
+
+	_transform.SetPosition(0.0f, 0.0f, -20.0f);
+	_transform2.SetPosition(0.0f, -7.0f, -20.0f);
+	_transform2.SetScale(8.0f, 0.05f, 10.0f);
+
+
+	
+
+
+
+
 
 }
 void MainLoop()
@@ -113,19 +184,36 @@ void MainLoop()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	_transform.Rotate(0.01f, 0.01f, 0.001f, true);
-	_shaderProgram.Activate();
-	_transform2.Rotate(0.03f, 0.02f, 0.004f, true);
+	//Cubo1 chingón
 	_shaderProgram.Activate();
 	_shaderProgram.SetUniformMatrix("mvpMatrix", _camera.GetViewProjection() * _transform.GetModelMatrix());
+	_NormalMatrix = glm::transpose(glm::inverse(glm::mat3(_transform.GetModelMatrix())));
+	_shaderProgram.SetUniformMatrix("_transform", _transform.GetModelMatrix());
+	_shaderProgram.SetUniformMatrix("_NormalMatrix", _NormalMatrix);
 	_mesh.Draw(GL_TRIANGLES);
-	_shaderProgram.SetUniformMatrix("mvpMatrix", _camera.GetViewProjection() * _transform2.GetModelMatrix());
-	_mesh.Draw(GL_TRIANGLES);
-	_shaderProgram.Deactivate();
-	_shaderProgram.Deactivate();
 
+	_shaderProgram.SetUniformMatrix("mvpMatrix", _camera.GetViewProjection() * _transform2.GetModelMatrix());
+	_NormalMatrix2 = glm::transpose(glm::inverse(glm::mat3(_transform2.GetModelMatrix())));
+	_shaderProgram.SetUniformMatrix("_transform", _transform2.GetModelMatrix());
+	_shaderProgram.SetUniformMatrix("_NormalMatrix", _NormalMatrix);
+	_mesh.Draw(GL_TRIANGLES);
+
+	
+	//matriz de normales transformacion 1
+	
+	
+	
+	
+
+	_shaderProgram.Deactivate();
+	
+
+	
 	// Intercambiar los buffers (el que se estaba rendereando con el que se estaba
 	// mostrando).
 	glutSwapBuffers();
+
+	
 }
 
 void Idle()
@@ -140,7 +228,7 @@ void Idle()
 void ReshapeWindow(int width, int height)
 {
 	glViewport(0, 0, width, height);
-	//camera.setpersective y mandar llamar el 
+	_camera.SetPerspective(1.0f, 1000.0f, 60.0f, (float)width / (float)height); 	//camera.setpersective y mandar llamar el 
 }
 
 int main(int argc, char* argv[])

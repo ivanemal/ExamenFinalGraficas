@@ -129,6 +129,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="InputFile.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="Transform.h" />
@@ -139,6 +140,11 @@
   <ItemGroup>
     <None Include="Default.frag" />
     <None Include="Default.vert" />
+    <None Include="PhongShader.frag" />
+    <None Include="PhongShader.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Project1.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
