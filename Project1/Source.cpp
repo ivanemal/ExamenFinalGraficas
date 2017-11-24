@@ -30,7 +30,12 @@ Transform _pivote3;
 Transform _pivote4;
 Transform _pivote5;
 ShaderProgram _shaderProgram;
-Texture2D myTexture;Texture2D myTexture2;
+Texture2D myTexture;
+Texture2D myTexture2;
+
+float _rotarZ =0.0f; 
+float _delta = 0.0375f; 
+
 glm::vec3 _LightPosition; 
 glm::vec3 _LightColor; 
 glm::vec3 _AmbientLight; 
@@ -181,11 +186,14 @@ void Initialize()
 	textures.push_back(glm::vec2(1.0f, 1.0f));
 	textures.push_back(glm::vec2(0.0f, 1.0f));
 
-	myTexture.LoadTexture("textura_rosita.png"); //ruta 	myTexture2.LoadTexture("textura_pizarron.png");
+	myTexture.LoadTexture("textura_rosita.png"); //ruta 
+	myTexture2.LoadTexture("textura_pizarron.png");
 
 
 
-	
+
+	
+
 
 	std::vector<unsigned int> indices = { 0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7, 8, 9, 10, 11, 8, 10, 12, 13, 15, 12, 15, 14, 16, 17, 18, 16, 18, 19, 22, 20, 23, 20, 21, 23 };
 
@@ -240,9 +248,9 @@ void Initialize()
 	_frontal.SetPosition(0.0f, 3.0f, 0.0f); 
 	_frontal.SetRotation(-90.0f, 0.0f, 0.0f);
 	_pivote4.SetPosition(0.0f, 0.0f, 3.0f);
-	_superior.SetPosition(-3.0f, 3.0f, 0.0f); 
-	_pivote5.SetPosition(3.0f, 6.0f, 0.0f); 
-	_superior.SetRotation(0.0f, 0.0f, 0.0f); 
+	_superior.SetPosition(0.0f, 3.0f, 0.0f); 
+	_superior.SetRotation(0.0f, 0.0f, -90.0f); 
+	_pivote5.SetPosition(3.0f, 0.0f, 0.0f);
 	//_superior.SetPosition()
 
 
@@ -255,9 +263,26 @@ void MainLoop()
 	// Borramos el buffer de color y profundidad siempre al inicio de un nuevo frame.
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
-
 	_transform.Rotate(0.0f, 0.01f, 0.0f, true);
+	
+	_pivote2.SetRotation(0.0f, 0.0f, _rotarZ);
+	_pivote1.SetRotation(0.0f, 0.0f, -_rotarZ); 
+	_pivote5.SetRotation(0.0f, 0.0f, -_rotarZ);
+	_pivote3.SetRotation(-_rotarZ, 0.0f, 0.f);
+	_pivote4.SetRotation(_rotarZ, 0.0f, 0.f);
+
+	_rotarZ += _delta; 
+	if (_rotarZ > 90.0f) {
+		_delta *= -1.0f; 
+		_rotarZ = 90.0f; 
+	}
+	
+	else if (_rotarZ < 0.0f) {
+		_delta *= -1.0f; 
+		_rotarZ = 0.0f; 
+	}
+	
+	
 	//_pivote1.SetRotation(0.0f, 0.0f, 90.0f);
 	_shaderProgram.Activate();
 	//Cubo1 chingón
@@ -278,7 +303,8 @@ void MainLoop()
 	glActiveTexture(GL_TEXTURE0);
 	myTexture.Unbind();
 	glActiveTexture(GL_TEXTURE1);
-	myTexture2.Unbind();
+	myTexture2.Unbind();
+
 
 
 	//Hijito 1 Derecho
@@ -319,8 +345,8 @@ void MainLoop()
 	//Hijito 3 Trasera
 	
 	_shaderProgram.SetUniformMatrix("mvpMatrix", _camera.GetViewProjection()* _transform.GetModelMatrix()* _pivote3.GetModelMatrix()* _trasera.GetModelMatrix());
-	_NormalMatrix = glm::transpose(glm::inverse(glm::mat3(_transform.GetModelMatrix())));
-	_shaderProgram.SetUniformMatrix("_transform", _transform.GetModelMatrix());
+	_NormalMatrix = glm::transpose(glm::inverse(glm::mat3(_transform.GetModelMatrix()* _pivote3.GetModelMatrix()* _trasera.GetModelMatrix())));
+	_shaderProgram.SetUniformMatrix("_transform", _transform.GetModelMatrix()* _pivote3.GetModelMatrix()* _trasera.GetModelMatrix());
 	_shaderProgram.SetUniformMatrix("_NormalMatrix", _NormalMatrix);
 	_shaderProgram.SetUniformi("DiffuseTexture", 0);
 	_shaderProgram.SetUniformi("DiffuseTexture2", 1);
@@ -337,8 +363,8 @@ void MainLoop()
 	//Hijito 4 Frontal
 	
 	_shaderProgram.SetUniformMatrix("mvpMatrix", _camera.GetViewProjection()* _transform.GetModelMatrix()* _pivote4.GetModelMatrix()* _frontal.GetModelMatrix());
-	_NormalMatrix = glm::transpose(glm::inverse(glm::mat3(_transform.GetModelMatrix())));
-	_shaderProgram.SetUniformMatrix("_transform", _transform.GetModelMatrix());
+	_NormalMatrix = glm::transpose(glm::inverse(glm::mat3(_transform.GetModelMatrix()* _pivote4.GetModelMatrix()* _frontal.GetModelMatrix())));
+	_shaderProgram.SetUniformMatrix("_transform", _transform.GetModelMatrix()* _pivote4.GetModelMatrix()* _frontal.GetModelMatrix());
 	_shaderProgram.SetUniformMatrix("_NormalMatrix", _NormalMatrix);
 	_shaderProgram.SetUniformi("DiffuseTexture", 0);
 	_shaderProgram.SetUniformi("DiffuseTexture2", 1);
@@ -354,8 +380,8 @@ void MainLoop()
 	//Nieto 
 
 	_shaderProgram.SetUniformMatrix("mvpMatrix", _camera.GetViewProjection()* _transform.GetModelMatrix()* _pivote1.GetModelMatrix()* _derecha.GetModelMatrix()*_pivote5.GetModelMatrix()*_superior.GetModelMatrix());
-	_NormalMatrix = glm::transpose(glm::inverse(glm::mat3(_transform.GetModelMatrix())));
-	_shaderProgram.SetUniformMatrix("_transform", _transform.GetModelMatrix());
+	_NormalMatrix = glm::transpose(glm::inverse(glm::mat3(_transform.GetModelMatrix()* _pivote1.GetModelMatrix()* _derecha.GetModelMatrix()*_pivote5.GetModelMatrix()*_superior.GetModelMatrix())));
+	_shaderProgram.SetUniformMatrix("_transform", _transform.GetModelMatrix()* _pivote1.GetModelMatrix()* _derecha.GetModelMatrix()*_pivote5.GetModelMatrix()*_superior.GetModelMatrix());
 	_shaderProgram.SetUniformMatrix("_NormalMatrix", _NormalMatrix);
 	_shaderProgram.SetUniformi("DiffuseTexture", 0);
 	_shaderProgram.SetUniformi("DiffuseTexture2", 1);
@@ -469,7 +495,9 @@ int main(int argc, char* argv[])
 
 	std::cout << glGetString(GL_VERSION) << std::endl;
 	//Inicializando DevIL 
-	ilInit();	ilEnable(IL_ORIGIN_SET);	ilOriginFunc(IL_ORIGIN_LOWER_LEFT);
+	ilInit();
+	ilEnable(IL_ORIGIN_SET);
+	ilOriginFunc(IL_ORIGIN_LOWER_LEFT);
 	// Configurar la memoria que la aplicación va a necesitar.
 	Initialize();
 

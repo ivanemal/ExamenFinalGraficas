@@ -28,6 +28,10 @@ glm::quat Transform::GetRotation()
 	return _rotation;
 }
 
+/*glm::quat Transform::GetRotationZ() {
+	return _rotation.z; 
+}*/
+
 glm::vec3 Transform::GetScale()
 {
 	return _scale;
@@ -44,6 +48,7 @@ void Transform::SetRotation(float x, float y, float z)
 	_rotation = glm::quat(glm::radians(glm::vec3(x, y, z)));
 	UpdateModelMatrixRotationScale();
 }
+
 
 void Transform::SetScale(float x, float y, float z)
 {

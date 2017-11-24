@@ -11,7 +11,9 @@ public:
 	glm::mat4 GetModelMatrix();
 	glm::vec3 GetPosition();
 	glm::quat GetRotation();
+	glm::quat GetRotationZ();
 	glm::vec3 GetScale();
+
 
 	void SetPosition(float x, float y, float z);
 	void SetRotation(float x, float y, float z);
